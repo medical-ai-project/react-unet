@@ -1,0 +1,214 @@
+import React, { useEffect, useRef } from 'react';
+// import "./styles.css";
+import * as THREE from "three";
+//import { VRButton } from "three/examples/jsm/webxr/VRButton";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+//import { XRControllerModelFactory } from "three/examples/jsm/webxr/XRControllerModelFactory";
+import Stats from "three/examples/jsm/libs/stats.module";
+//import { MapControls } from "three/examples/jsm/controls/OrbitControls";
+
+//import { PCDLoader } from "three/examples/jsm/loaders/PCDLoader";
+import { TrackballControls } from "three/examples/jsm/controls/TrackballControls";
+import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
+
+
+import { List } from './components/List';
+
+export default function App() {
+  const mountRef = useRef(null);
+
+  useEffect(() => {
+    // containerをrefから取得するように変更
+    container = mountRef.current;
+
+    init();
+    animate();
+
+    // ここでウィンドウのリサイズイベントリスナーを設定
+    window.addEventListener('resize', onWindowResize);
+
+    // 初期リサイズをトリガーして、canvasを正しいサイズにする
+    onWindowResize();
+
+    // コンポーネントのクリーンアップ関数
+    return () => {
+      // イベントリスナーの削除
+      window.removeEventListener('resize', onWindowResize);
+
+      // アニメーションループを停止
+      cancelAnimationFrame(animateId);
+
+      // rendererからcanvasを削除
+      container.removeChild(renderer.domElement);
+
+      // 各種オブジェクトの破棄処理など
+    }
+  }, []);
+
+  const containerStyle = {
+    flexBasis: '50%', // 幅の50%を取る
+  };
+
+  // "hello"テキストのスタイルを定義
+  const helloStyle = {
+    flexBasis: '50%', // 幅の50%を取るflex: 1
+  };
+
+  // 親コンテナのスタイルを定義
+  const bodyStyle = {
+    display: 'flex',
+    flexDirection: 'row', // 水平方向に要素を配置
+    width: '100%',
+    height: '100vh',
+    margin: 0,
+    padding: 0,
+  };
+
+  return (
+    <div style={bodyStyle}>
+      <div style={helloStyle}>helloooooooooooooooo</div>
+      {/* <List /> */}
+      <div ref={mountRef} style={containerStyle} />
+    </div>
+    
+  )
+}
+
+var container, stats;
+var camera, scene, renderer;
+var controls;
+
+// init();
+// animate();
+
+function init() {
+  // container = document.createElement("div");
+  // document.body.appendChild(container);
+    // renderer
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.shadowMap.enabled = true;
+  container.appendChild(renderer.domElement);
+
+  camera = new THREE.PerspectiveCamera(
+    10,
+    window.innerWidth / window.innerHeight,
+    // near
+    3,
+    100
+  );
+  camera.position.set(0, 0, 15);
+
+  
+  // カメラとコントロールの初期化
+  camera.position.set(0, 0, 15);
+  controls = new TrackballControls(camera, renderer.domElement);
+  controls.target.set(0, 0, 0); // この行でカメラが常に向く点を(0, 0, 0)に設定
+
+  controls.update();
+  
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x999999);
+
+  // Ground
+  var planeMaterial = new THREE.MeshBasicMaterial({ color: scene.background });
+  var plane = new THREE.Mesh(
+    new THREE.PlaneGeometry(40, 40),
+    planeMaterial
+  );
+  plane.rotation.x = 0;
+  plane.position.y = 100;
+  scene.add(plane);
+
+  plane.receiveShadow = true;
+
+  // PLY file
+  var loader = new PLYLoader();
+  loader.load("models/brain_3d.ply", function(geometry) {
+    geometry.computeVertexNormals();
+
+    // バウンディングボックスを計算
+    geometry.computeBoundingBox();
+
+    // バウンディングボックスの中心を計算
+    var centroid = new THREE.Vector3();
+    geometry.boundingBox.getCenter(centroid);
+
+    geometry.translate(-centroid.x, -centroid.y, -centroid.z);
+
+    var material = new THREE.PointsMaterial({
+      size: 0.02, // 点のサイズ
+      vertexColors: true // 頂点の色を使用
+    });
+
+    // THREE.Pointsオブジェクトを生成
+    var points = new THREE.Points(geometry, material);
+
+    // // 点群の位置、回転、スケールを設定
+    // points.position.y = -0.2;
+    // points.position.z = 0;
+    // points.rotation.x = 0;
+    // points.scale.multiplyScalar(0.005);
+    
+    var points = new THREE.Points(geometry, material);
+    points.scale.multiplyScalar(0.005);
+    scene.add(points);
+  });
+  
+  var axesHelper = new THREE.AxesHelper(5); // 引数は軸のサイズを表します。
+  scene.add(axesHelper);
+
+
+
+
+
+  // stats
+  stats = new Stats();
+  container.appendChild(renderer.domElement);
+
+  // resize
+  window.addEventListener("resize", onWindowResize, false);
+
+  
+  controls.staticMoving = true; // ドラッグ中のみカメラが動くようになります
+  controls.rotateSpeed = 5.0;
+  controls.zoomSpeed = 1.2;
+  controls.panSpeed = 0.8;
+  controls.noRotate = false; // ローテーションを有効にする
+  controls.noZoom = false; // ズームを有効にする
+  controls.noPan = false; // パンを有効にする
+}
+
+
+
+function onWindowResize() {
+  // // コンテナの現在のサイズを取得
+  // const width = container.clientWidth;
+  // const height = container.clientHeight;
+
+  const width = window.innerWidth * 0.5; // ウィンドウ幅の 50%
+  const height = window.innerHeight * 0.5; // ウィンドウ高さの 50%
+
+  // カメラとレンダラーのアスペクト比とサイズを更新
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(width, height);
+}
+
+var animateId;
+function animate() {
+  animateId = requestAnimationFrame(animate);
+
+  controls.update();
+
+  render();
+  stats.update();
+}
+
+function render() {
+  renderer.render(scene, camera);
+}
