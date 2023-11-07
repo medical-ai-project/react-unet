@@ -5,12 +5,30 @@ import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
 
 
 import { ImageList } from './components/ImageList';
+import { PatientBioDataList } from './components/PatientBioDataList';
 
 export default function App() {
   const mountRef = useRef(null);
 
+  const patientsData = [
+    {
+      id: "TCGA_HT_7881_19981015",
+      name: 'John Doe',
+      age: 30,
+      heartRate: 70,
+      bloodPressure: '120/80'
+    },
+    // {
+    //   id: 2,
+    //   name: 'Jane Smith',
+    //   age: 25,
+    //   heartRate: 75,
+    //   bloodPressure: '110/70'
+    // },
+  ];
+
   useEffect(() => {
-    let container, stats;
+    let container;
     let camera, scene, renderer;
     let controls;
     let animateId;
@@ -76,7 +94,7 @@ export default function App() {
 
     function onWindowResize() {
       const width = window.innerWidth * 0.5;
-      const height = window.innerHeight * 0.7;
+      const height = window.innerHeight * 0.6;
 
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
@@ -107,7 +125,10 @@ export default function App() {
 
   return (
     <div style={bodyStyle}>
-      <ImageList />
+      <div>
+        <ImageList />
+        <PatientBioDataList patients={patientsData}/>
+      </div>
       {/* <div style={{ flexBasis: '50%' }}>helloooooooooooooooo<br/>Sg</div> */}
       <div ref={mountRef} />
     </div>

@@ -17,9 +17,19 @@ const styles = {
   imageContainer: {
     display: 'flex', // Flexbox コンテナとして設定
     justifyContent: 'space-around', // 画像間に均等なスペースを設定
+    flexDirection: 'row', // 子要素を行方向に配置
+  },
+  imageAndCaption: {
+    display: 'flex', // Flexbox コンテナとして設定
+    flexDirection: 'column', // 子要素を列方向に配置
+    alignItems: 'center', // 中央揃え
+    maxWidth: '50%', // コンテナの幅の50%
+  },
+  caption: {
+    marginBottom: '10px', // キャプションと画像の間の余白
   },
   image: {
-    maxWidth: '50%', // 画像の最大幅をコンテナの幅の50%に設定
+    maxWidth: '90%', // 画像の最大幅をコンテナの幅の50%に設定
     height: 'auto', // 画像の高さを自動調整
     display: 'block', // ブロックレベル要素として画像を表示
     marginBottom: '10px', // 次の画像との間にスペースを追加
@@ -63,16 +73,22 @@ export const ImageList = () => {
         ))}
       </div>
       <div style={styles.imageContainer}>
-        <img 
-          src={`images/TCGA_HT_7881_19981015_png/${selectedImage.image}`} 
-          alt={`Image ${selectedImage.image}`} 
-          style={styles.image}
-        />
-        <img 
-          src={`images/TCGA_HT_7881_19981015_png/${selectedImage.mask}`} 
-          alt={`Mask ${selectedImage.mask}`} 
-          style={styles.image}
-        />
+        <div style={styles.imageAndCaption}>
+          <div style={styles.caption}>original</div>
+          <img 
+            src={`images/TCGA_HT_7881_19981015_png/${selectedImage.image}`} 
+            alt={`${selectedImage.image}`} 
+            style={styles.image}
+          />
+        </div>
+        <div style={styles.imageAndCaption}>
+          <div style={styles.caption}>mask</div>
+          <img 
+            src={`images/TCGA_HT_7881_19981015_png/${selectedImage.mask}`} 
+            alt={`${selectedImage.mask}`} 
+            style={styles.image}
+          />
+        </div>
       </div>
     </div>
   );
