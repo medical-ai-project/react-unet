@@ -9,7 +9,7 @@ export const PatientBioDataList = ({ patients }) => {
       <ul>
         {patients.map((patient) => (
           <li key={patient.id}>
-            <h3>ID: {patient.id}</h3>
+            <h3>Patient ID: {patient.id}</h3>
             <ul>
             <li>Name: {patient.name}</li>
             <li><p>Age: {patient.age}</p></li>

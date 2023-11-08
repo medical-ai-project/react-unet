@@ -44,19 +44,32 @@ const styles = {
 };
 
 export const ImageList = () => {
-  // 選択された画像とそのマスクを状態として持つ
+  const [sliderValue, setSliderValue] = useState(0);
   const [selectedImage, setSelectedImage] = useState({
     image: 'TCGA_HT_7881_19981015_1.png',
-    mask: 'TCGA_HT_7881_19981015_1_mask.png' // 初期マスク画像
+    mask: 'TCGA_HT_7881_19981015_1_mask.png'
   });
-
+  
   const images = Array.from({ length: 80 }, (_, index) => ({
     image: `TCGA_HT_7881_19981015_${index + 1}.png`,
-    mask: `TCGA_HT_7881_19981015_${index + 1}_mask.png` // 各画像に対応するマスクのパス
+    mask: `TCGA_HT_7881_19981015_${index + 1}_mask.png`
   }));
 
-  const handleClick = (imageObj) => {
+  const handleClick = (imageObj, index) => {
     setSelectedImage(imageObj);
+      // 例: z 値が -79 から 79 までの範囲である場合（偶数のインデックスのみを考慮）
+    const zValue = (index * 2) - 79;
+    window.updateScene(zValue);
+
+    
+  };
+
+  const handleSliderChange = (event) => {
+    const newIndex = parseInt(event.target.value, 10);
+    setSliderValue(newIndex);
+    setSelectedImage(images[newIndex]);
+    const zValue = (newIndex * 2) - 79; // zValueの計算を行う
+    window.updateScene(zValue); // updateScene関数を呼び出してzValueを渡す
   };
 
   return (
@@ -65,7 +78,7 @@ export const ImageList = () => {
         {images.map((imageObj, index) => (
           <button 
             key={index} 
-            onClick={() => handleClick(imageObj)} 
+            onClick={() => handleClick(imageObj, index)} 
             style={styles.button}
           >
             {imageObj.image}
@@ -90,6 +103,14 @@ export const ImageList = () => {
           />
         </div>
       </div>
+      <input
+        type="range"
+        min="0"
+        max={images.length - 1} // 最大値は画像の数-1
+        value={sliderValue}
+        onChange={handleSliderChange}
+        style={{ width: '100%' }} // スライダーのスタイル設定
+      />
     </div>
   );
 };
