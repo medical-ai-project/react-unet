@@ -6,7 +6,10 @@ import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
 
 import { ImageList } from './components/ImageList';
 import { PatientBioDataList } from './components/PatientBioDataList';
+import { CamPage } from './components/CamPage';
 
+
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 export default function App() {
   const mountRef = useRef(null);
@@ -197,6 +200,11 @@ export default function App() {
 
   return (
     <div style={bodyStyle}>
+        <Router>
+          <Routes>
+            <Route path="/cam" element={<CamPage />} />
+          </Routes>
+        </Router>
       <div>
         <ImageList />
         <PatientBioDataList patients={patientsData}/>
