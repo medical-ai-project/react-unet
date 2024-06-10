@@ -14,8 +14,8 @@ npm install
 npm run start
 ```
 
-データセット:The Cancer Imaging Archive, “Brain MRI segmentation”, https://www.kaggle.com/datasets/mateuszbuda/lgg-mri-segmentation, (accessed 2024-6-10).
-データセットのLicense:CC BY-NC-SA 4.0
+データセット: The Cancer Imaging Archive, “Brain MRI segmentation”, https://www.kaggle.com/datasets/mateuszbuda/lgg-mri-segmentation, (accessed 2024-6-10).  
+データセットのLicense: CC BY-NC-SA 4.0
 
 ## 表示例
 ![example_page](public/example_page.png)
